@@ -11,9 +11,12 @@ public class PlayerInteractionsComponent : MonoBehaviour
     [SerializeField] Object switchObj;
     Transform switchTransform;
     Renderer renderer;
+    [SerializeField] Object GameManager;
+    TimeScoreComponent gameScore;
     // Start is called before the first frame update
     void Start()
     {
+        gameScore = GameManager.GetComponent<TimeScoreComponent>();
         switchTransform = switchObj.GetComponent<Transform>();
         renderer = GetComponent<Renderer>();
         renderer.material.color = Color.cyan;
@@ -46,7 +49,7 @@ public class PlayerInteractionsComponent : MonoBehaviour
     {
         if(collision.gameObject.tag == "Enemy")
         {
-            SceneManager.LoadScene("Game Over");
+            gameScore.EndGame();
         }
 
     }
