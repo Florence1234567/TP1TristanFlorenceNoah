@@ -13,6 +13,8 @@ public class PlayerMoveComponent : MonoBehaviour
     [SerializeField] float speed = 3;
     [SerializeField] float rotationSpeed = 5;
 
+    Animator animator;
+
     Rigidbody rigidbody;
     Vector3 translation;
     Vector3 direction = Vector3.zero;
@@ -25,6 +27,7 @@ public class PlayerMoveComponent : MonoBehaviour
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -58,25 +61,40 @@ public class PlayerMoveComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(direction != Vector3.zero)
+        if (direction != Vector3.zero)
         {
+            animator.SetBool("isMoving", true);
             toRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
             translation = Vector3.forward * Time.deltaTime * speed;
 
             if (isRunning)
+            {
                 translation *= 2;
+                animator.SetBool("isRunning", true);
+            }
+            else
+                animator.SetBool("isRunning", false);
+
+
 
             transform.Translate(translation);
-            
+
         }
+        else
+            animator.SetBool("isMoving", false);
+
         
         if (isJumping)
+        {
+            animator.SetTrigger("jump");
             Jump();
+        }
+            
     }
 
     private void Jump()
     {
-        rigidbody.AddForce(Vector3.up, ForceMode.Impulse);
+        rigidbody.AddForce(Vector3.up * Time.deltaTime, ForceMode.Impulse);
     }
 }
