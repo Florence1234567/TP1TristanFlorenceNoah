@@ -64,6 +64,7 @@ public class PlayerMoveComponent : MonoBehaviour
         if (direction != Vector3.zero)
         {
             animator.SetBool("isMoving", true);
+            animator.SetBool("dance", false);
             toRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
             translation = Vector3.forward * Time.deltaTime * speed;
