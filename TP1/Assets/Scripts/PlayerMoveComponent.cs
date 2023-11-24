@@ -77,10 +77,7 @@ public class PlayerMoveComponent : MonoBehaviour
             else
                 animator.SetBool("isRunning", false);
 
-
-
             transform.Translate(translation);
-
         }
         else
             animator.SetBool("isMoving", false);
@@ -115,5 +112,16 @@ public class PlayerMoveComponent : MonoBehaviour
             rigidbody.AddRelativeForce(new Vector3(0, 5, 0), ForceMode.Impulse);
         }
         //rigidbody.AddForce(Vector3.up * Time.deltaTime, ForceMode.Impulse);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.transform.tag == "Enemy")
+        {
+            animator.SetTrigger("IsDead");
+            MoveAction.Disable();
+            RunAction.Disable();
+            JumpAction.Disable();
+        }
     }
 }
