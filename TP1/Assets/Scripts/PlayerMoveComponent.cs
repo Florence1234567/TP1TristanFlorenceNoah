@@ -10,7 +10,7 @@ public class PlayerMoveComponent : MonoBehaviour
     [SerializeField] InputAction MoveAction;
     [SerializeField] InputAction RunAction;
     [SerializeField] InputAction JumpAction;
-    [SerializeField] float speed = 3;
+    [SerializeField] float speed = 4;
     [SerializeField] float rotationSpeed = 5;
 
     Animator animator;
@@ -42,8 +42,8 @@ public class PlayerMoveComponent : MonoBehaviour
         RunAction.performed += _ => isRunning = true;
         RunAction.canceled += _ => isRunning = false;
 
-        JumpAction.performed += _ => isJumping = true;
-        JumpAction.canceled += _ => isJumping = false;
+        JumpAction.performed += _ => Jump();
+       // JumpAction.canceled += _ => isJumping = false;
     }
 
     private void OnDisable()
@@ -88,14 +88,32 @@ public class PlayerMoveComponent : MonoBehaviour
         
         if (isJumping)
         {
-            animator.SetTrigger("jump");
-            Jump();
+
+            //Jump();
         }
             
     }
 
+    public bool IsGrounded()
+    {
+        // Cast a ray downward to check for ground
+        Ray ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, .2f))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private void Jump()
     {
-        rigidbody.AddForce(Vector3.up * Time.deltaTime, ForceMode.Impulse);
+        if (!isJumping && IsGrounded())
+        {
+            animator.SetTrigger("jump");
+            rigidbody.AddRelativeForce(new Vector3(0, 5, 0), ForceMode.Impulse);
+        }
+        //rigidbody.AddForce(Vector3.up * Time.deltaTime, ForceMode.Impulse);
     }
 }
