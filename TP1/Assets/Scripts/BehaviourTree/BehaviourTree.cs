@@ -159,11 +159,28 @@ public class GoToTarget : Node
         agent.destination = target.position;
 
         if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            agent.transform.GetComponent<Animator>().SetBool("IsWalking", false);
             state = NodeState.Success;
+
+
+        }
         if (agent.SetDestination(agent.destination))
+        {
+            if (agent.remainingDistance > agent.stoppingDistance)
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking",true);
+
             state = NodeState.Running;
+            return state;
+        }
         else
+        {
+            if (agent.remainingDistance > agent.stoppingDistance)
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", true);
             state = NodeState.Failure;
+
+        }
+
 
         return state;
     }
@@ -186,7 +203,7 @@ public class JumpRequired : Node
     {
         state = NodeState.Failure;
 
-        if (target.position.y > self.position.y + jumpReq && target.position.y < self.position.y + jumpRange)
+        if ((target.position.y > self.position.y + jumpReq && target.position.y < self.position.y + jumpRange))
             state = NodeState.Success;
         else if (!self.GetComponent<PatrolComponent>().isJumping)
         {
@@ -236,14 +253,17 @@ public class JumpOnTarget : Node
     {
         state = NodeState.Running;
 
+
         if (isWaiting)
         {
             elapsedJumpTime += Time.deltaTime;
 
-            if (elapsedJumpTime >= .55f)
+            if (elapsedJumpTime >= .75f)
             {
                 agent.enabled = true;
                 agent.transform.GetComponent<PatrolComponent>().isJumping = false;
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", true);
+
                 agent.SetDestination(target.position);
 
             }
@@ -257,6 +277,8 @@ public class JumpOnTarget : Node
                 rigidbody.useGravity = false;
                 rigidbody.isKinematic = true;
                 agent.enabled = true;
+                agent.SetDestination(target.position);
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", true);
 
 
                 if (target.position.y < agent.transform.position.y + .2f)
@@ -267,6 +289,8 @@ public class JumpOnTarget : Node
         }
         else
         {
+            agent.transform.GetComponent<Animator>().SetTrigger("Jump");
+
             Jump();
 
             return state;
@@ -287,8 +311,14 @@ public class JumpOnTarget : Node
         // rigidbody.AddRelativeForce(new Vector3(0, jumpHeight, 0), ForceMode.Impulse);
 
         Vector3 currentVelocity = agent.velocity;
+        Vector3 directionToTarget = target.position - agent.transform.position;
 
-        Debug.Log("Jumping");
+        directionToTarget.y = 0;
+
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+
+        agent.transform.rotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
+
         isWaiting = true;
         agent.enabled = false;
         rigidbody.isKinematic = false;
@@ -322,7 +352,7 @@ public class PatrolTask : Node
     public override NodeState Evaluate()
     {
         state = NodeState.Running;
-        
+
 
         if (isWaiting && targets.Count > 0)
         {
@@ -331,6 +361,7 @@ public class PatrolTask : Node
             {
                 isWaiting = false;
                 elapsedTime = 0;
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", false);
 
                 targetIndx = (targetIndx + 1) % targets.Count;
             }
@@ -338,11 +369,17 @@ public class PatrolTask : Node
         else if (agent.enabled)
         {
             if (agent.remainingDistance <= agent.stoppingDistance)
+            {
                 isWaiting = true;
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", false);
+            }
             agent.enabled = true;
+
 
             if (!agent.SetDestination(agent.destination))
                 state = NodeState.Failure;
+            else
+                agent.transform.GetComponent<Animator>().SetBool("IsWalking", true);
         }
 
         return state;

@@ -37,7 +37,7 @@ public class PatrolComponent : MonoBehaviour
         Node sequence1 = new Sequence(new List<Node>() { l1, l2 });
 
         Node l4 = new JumpRequired(transform, target, 10f);
-        Node l5 = new JumpOnTarget(target, agent, transform.GetComponent<Rigidbody>(), 7f, 1.5f);
+        Node l5 = new JumpOnTarget(target, agent, transform.GetComponent<Rigidbody>(), 7f, 1.1f);
 
         Node sequence2 = new Sequence(new List<Node>() { l4, l5 });
 
