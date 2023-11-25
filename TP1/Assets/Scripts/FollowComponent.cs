@@ -27,13 +27,10 @@ public class FollowComponent : MonoBehaviour
             return;
 
         if (Vector3.Distance(portal.transform.position, transform.position) <= 2)
-        {
             animator.SetTrigger("Jump");
-        }
         else
-        {
             animator.SetBool("IsWalking", true);
-        }
+
         if (agent.remainingDistance <= agent.stoppingDistance)
         {
             animator.SetBool("IsWalking", false);
