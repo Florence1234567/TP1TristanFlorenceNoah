@@ -5,24 +5,28 @@ using UnityEngine.InputSystem;
 
 public class FirstPersonCamera : MonoBehaviour
 {
-    [SerializeField] Transform player;
-    float rotationCamera = 0;
-
-    // Start is called before the first frame update
-    void Start()
+    public float Sensitivity
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        get { return sensitivity; }
+        set { sensitivity = value; }
     }
 
-    // Update is called once per frame
+    [Range(0.1f, 9f)][SerializeField] float sensitivity = 2f;
+    [Tooltip("Limits vertical camera rotation. Prevents the flipping that happens when rotation goes above 90.")]
+    [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
+
+    Vector2 rotation = Vector2.zero;
+    const string xAxis = "Mouse X"; //Strings in direct code generate garbage, storing and re-using them creates no garbage
+    const string yAxis = "Mouse Y";
+
     void Update()
     {
-        Vector2 delta = Mouse.current.delta.ReadValue() * Time.deltaTime * 75;
+        rotation.x += Input.GetAxis(xAxis) * sensitivity;
+        rotation.y += Input.GetAxis(yAxis) * sensitivity;
+        rotation.y = Mathf.Clamp(rotation.y, -yRotationLimit, yRotationLimit);
+        var xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
+        var yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
 
-        rotationCamera -= delta.y;
-        rotationCamera = Mathf.Clamp(rotationCamera, -90, 90);
-        transform.localRotation = Quaternion.Euler(rotationCamera, 0, 0);
-
-        player.Rotate(Vector3.up * delta.x);
+        transform.localRotation = xQuat * yQuat; //Quaternions seem to rotate more consistently than EulerAngles. Sensitivity seemed to change slightly at certain degrees using Euler. transform.localEulerAngles = new Vector3(-rotation.y, rotation.x, 0);
     }
 }

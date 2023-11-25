@@ -80,15 +80,7 @@ public class PlayerMoveComponent : MonoBehaviour
             transform.Translate(translation);
         }
         else
-            animator.SetBool("isMoving", false);
-
-        
-        if (isJumping)
-        {
-
-            //Jump();
-        }
-            
+            animator.SetBool("isMoving", false);            
     }
 
     public bool IsGrounded()

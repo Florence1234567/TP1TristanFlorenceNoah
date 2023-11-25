@@ -33,7 +33,6 @@ public class FollowComponent : MonoBehaviour
         else
         {
             animator.SetBool("IsWalking", true);
-        }
 
         if (agent.remainingDistance <= agent.stoppingDistance)
         {
