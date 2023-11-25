@@ -23,11 +23,12 @@ public class FollowComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Vector3.Distance(portal.transform.position, transform.position) <= 2);
+        if (!agent.enabled)
+            return;
+
         if (Vector3.Distance(portal.transform.position, transform.position) <= 2)
         {
             animator.SetBool("IsJumping", true);
-            Debug.Log(1);
         }
         else
         {

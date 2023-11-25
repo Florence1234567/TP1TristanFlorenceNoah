@@ -194,7 +194,6 @@ public class JumpRequired : Node
             return state;
         }
 
-        Debug.Log(self.GetComponent<PatrolComponent>().isJumping);
         return state;
     }
 }
